@@ -297,6 +297,7 @@ fullstack-challenge/
 │   │   │   └── presentation/
 │   │   ├── tests/ (unit/ + e2e/)
 │   │   ├── Dockerfile
+│   │   ├── .env
 │   │   └── package.json
 │   └── wallets/
 │       ├── src/
@@ -308,6 +309,7 @@ fullstack-challenge/
 │       │   └── presentation/
 │       ├── tests/ (unit/ + e2e/)
 │       ├── Dockerfile
+│       ├── .env
 │       └── package.json
 ├── packages/                          # Pacotes compartilhados entre serviços
 │   │                                  # Ex: @crash/eslint
@@ -320,12 +322,12 @@ fullstack-challenge/
 │   │   ├── services/
 │   │   └── stores/
 │   ├── Dockerfile
+│   ├── .env
 │   └── package.json
 ├── docker/
 │   ├── kong/kong.yml
 │   ├── keycloak/realm-export.json
 │   └── postgres/init-databases.sh
-├── .env
 ├── docker-compose.yml
 ├── package.json
 └── README.md
@@ -419,6 +421,7 @@ Não obrigatórios, mas diferenciam candidatos excepcionais:
 - **Efeitos sonoros** — Feedback de áudio para aposta, cashout, crash
 - **Leaderboard** — Top jogadores por lucro (24h/semana)
 - **CI pipeline** — GitHub Actions rodando testes no push
+- **Playwright** — Testes E2E de ponta a ponta simulando fluxos reais do jogador no browser
 - **Rate limiting** — Via Kong ou na aplicação
 - **Storybook** — Biblioteca de componentes
 - **Fórmula da curva na UI** — Exibir a fórmula para transparência
