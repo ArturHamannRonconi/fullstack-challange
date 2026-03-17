@@ -22,23 +22,6 @@ Você deve construir o **backend** (engine do jogo, carteira, comunicação em t
 
 ---
 
-## Índice 📋
-
-- [Regras do Jogo](#regras-do-jogo)
-- [Arquitetura](#arquitetura)
-- [Tech Stack](#tech-stack-aceita)
-- [Infraestrutura e Setup](#infraestrutura-e-setup)
-- [Modelo de Domínio](#modelo-de-domínio)
-- [Algoritmo Provably Fair](#algoritmo-provably-fair)
-- [Referência da API](#referência-da-api)
-- [Requisitos do Frontend](#requisitos-do-frontend)
-
-- [Testes](#testes)
-- [Critérios de Avaliação](#critérios-de-avaliação)
-- [Entrega](#entrega)
-- [Bônus](#bônus)
-
----
 
 ## Regras do Jogo 🎲
 
