@@ -64,6 +64,16 @@ Os pacotes compartilhados **não podem**:
 - Ler arquivos ou env vars.
 - Depender de React/DOM (a menos que o pacote seja especificamente pra frontend — e nesse caso isole em `packages/ui/` e deixe claro no README dele).
 
+### Exceção explícita: `@crash/auth`
+
+`packages/auth/` é o **único** pacote autorizado a importar `@nestjs/*`. Justificativa: a verificação de JWT via JWKS (passport-jwt + jwks-rsa) precisa de DI/Module/Guard do Nest e seria duplicada em `games` e `wallets` se ficasse nos services. Auth é segurança — uma fonte única revisada > duas cópias que podem divergir.
+
+Restrições do `@crash/auth`:
+- **Server-only.** **Nunca** declarar como dependência em `frontend/package.json` (Bun não vai symlinkar, `import` falha no resolve).
+- Só faz **verificação de assinatura + parsing de claims padrão** (sub, preferred_username, realm_access.roles). Regras de autorização específicas de domínio ficam no service.
+- Sem segredos: usa RS256 + JWKS público do Keycloak. Se um dia precisar de HS256/segredo simétrico, não vai pra cá.
+- Outros pacotes shared **continuam proibidos** de importar `@nestjs/*`. Esta exceção não abre precedente — ver `packages/auth/CLAUDE.md`.
+
 Os pacotes **podem**:
 - Usar `crypto` nativo do Node/Bun (provably-fair precisa de `createHmac`).
 - Depender de libs puras de utilitário (`zod`, `decimal.js` se precisar — prefira `bigint` nativo).
