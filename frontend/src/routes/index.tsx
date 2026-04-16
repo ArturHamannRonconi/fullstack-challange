@@ -1,18 +1,20 @@
-import { createFileRoute } from '@tanstack/react-router'
-import { ServiceBadge } from '@/features/health/ServiceBadge'
+import { Navigate, createFileRoute } from '@tanstack/react-router'
+import { useAuth } from 'react-oidc-context'
 
 export const Route = createFileRoute('/')({
-  component: HomePage,
+  component: IndexPage,
 })
 
-function HomePage() {
-  return (
-    <main className="flex min-h-svh flex-col items-center justify-center gap-8 p-8">
-      <h1 className="text-3xl font-semibold">Crash Game</h1>
-      <div className="flex flex-wrap items-center gap-4">
-        <ServiceBadge name="games" />
-        <ServiceBadge name="wallets" />
-      </div>
-    </main>
-  )
+function IndexPage() {
+  const auth = useAuth()
+
+  if (auth.isLoading) {
+    return (
+      <main className="flex min-h-svh items-center justify-center p-6">
+        <div className="size-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+      </main>
+    )
+  }
+
+  return auth.isAuthenticated ? <Navigate to="/dashboard" /> : <Navigate to="/login" />
 }
