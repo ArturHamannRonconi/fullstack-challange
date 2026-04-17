@@ -4,20 +4,36 @@
   "private": true,
   "scripts": {
     "dev": "bun run --watch src/main.ts",
-    "start": "bun run src/main.ts",
+    "start": "bunx prisma migrate deploy && bun run src/main.ts",
+    "prisma:generate": "bunx prisma generate --schema=src/infrastructure/database/schema.prisma",
+    "prisma:migrate": "bunx prisma migrate dev --schema=src/infrastructure/database/schema.prisma",
+    "prisma:deploy": "bunx prisma migrate deploy --schema=src/infrastructure/database/schema.prisma",
     "test": "bun test tests/unit",
-    "test:e2e": "bun test tests/e2e"
+    "test:integration": "bun test tests/integration",
+    "test:e2e": "bun tests/e2e/run-sequential.ts"
   },
   "dependencies": {
     "@crash/auth": "workspace:*",
+    "@crash/domain": "workspace:*",
     "@nestjs/common": "^11.1.17",
     "@nestjs/core": "^11.1.17",
     "@nestjs/platform-express": "^11.1.17",
+    "@nestjs/swagger": "^11.2.0",
+    "@prisma/client": "^6.2.0",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.1",
+    "ddd-tool-kit": "^2.3.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.2"
   },
   "devDependencies": {
+    "@nestjs/testing": "^11",
+    "@types/express": "^5.0.0",
+    "@types/supertest": "^7.2.0",
     "bun-types": "latest",
+    "playwright": "^1.59.1",
+    "prisma": "^6.2.0",
+    "supertest": "^7.2.2",
     "typescript": "^5.8.3"
   }
 }
