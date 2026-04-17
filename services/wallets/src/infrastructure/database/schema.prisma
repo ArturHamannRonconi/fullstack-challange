@@ -1,0 +1,51 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Wallet {
+  id        String   @id @db.VarChar(16)
+  userId    String   @unique @map("user_id") @db.VarChar(64)
+  balance   BigInt   @default(0)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  operations Operation[]
+  reserves   Reserve[]
+
+  @@index([userId])
+  @@map("wallets")
+}
+
+model Operation {
+  id        String   @id @db.VarChar(16)
+  walletId  String   @map("wallet_id") @db.VarChar(16)
+  type      String   @db.VarChar(16)
+  funds     BigInt
+  createdAt DateTime @default(now()) @map("created_at")
+
+  wallet Wallet @relation(fields: [walletId], references: [id], onDelete: Cascade)
+
+  @@index([walletId])
+  @@index([walletId, createdAt])
+  @@map("operations")
+}
+
+model Reserve {
+  id        String   @id @db.VarChar(16)
+  walletId  String   @map("wallet_id") @db.VarChar(16)
+  funds     BigInt
+  betId     String   @map("bet_id") @db.VarChar(16)
+  roundId   String   @map("round_id") @db.VarChar(16)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  wallet Wallet @relation(fields: [walletId], references: [id], onDelete: Cascade)
+
+  @@unique([walletId, betId])
+  @@index([walletId])
+  @@map("reserves")
+}
