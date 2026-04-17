@@ -86,7 +86,8 @@ O `games` é o **único gateway WS**. `wallets` publica eventos no broker; `game
 
 - Runtime: **Bun 1.x**
 - Backend: **NestJS 11 + TypeScript strict**
-- DB: **PostgreSQL 18** (via ORM — decisão deferida; MikroORM tem melhor ergonomia DDD)
+- DB: **PostgreSQL 18** via **Prisma** (schema canônico em `services/<name>/prisma/schema.prisma`; `BigInt` para cents)
+- DDD: **`ddd-tool-kit`** (base classes `ValueObject`/`Entity`/`Aggregate`, `Output`, `IError`, utils) + **`@crash/domain`** (`MoneyValueObject` compartilhado)
 - Broker: **RabbitMQ**
 - Gateway: **Kong** (declarativo via `kong.yml`)
 - IdP: **Keycloak 26**
