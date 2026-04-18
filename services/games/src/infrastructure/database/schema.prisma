@@ -1,0 +1,55 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "./generated"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Round {
+  id               String   @id @db.VarChar(16)
+  serverSeed       String   @map("server_seed") @db.VarChar(128)
+  seedHash         String   @map("seed_hash") @db.VarChar(128)
+  crashPointScaled Int      @map("crash_point_scaled")
+  startedAt        DateTime? @map("started_at")
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  bets         Bet[]
+  statusHistory RoundStatus[]
+
+  @@index([createdAt])
+  @@map("rounds")
+}
+
+model Bet {
+  id                String   @id @db.VarChar(16)
+  roundId           String   @map("round_id") @db.VarChar(16)
+  playerId          String   @map("player_id") @db.VarChar(64)
+  username          String?  @db.VarChar(64)
+  stakedAmount      BigInt   @map("staked_amount")
+  cashOutPointScaled BigInt?  @map("cash_out_point_scaled")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  round Round @relation(fields: [roundId], references: [id], onDelete: Cascade)
+
+  @@unique([roundId, playerId])
+  @@index([roundId])
+  @@index([playerId, createdAt])
+  @@map("bets")
+}
+
+model RoundStatus {
+  id         String   @id @db.VarChar(16)
+  roundId    String   @map("round_id") @db.VarChar(16)
+  status     String   @db.VarChar(16)
+  statusDate DateTime @map("status_date")
+
+  round Round @relation(fields: [roundId], references: [id], onDelete: Cascade)
+
+  @@index([roundId, statusDate])
+  @@map("round_statuses")
+}

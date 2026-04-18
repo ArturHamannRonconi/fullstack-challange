@@ -61,7 +61,7 @@ Estados e durações (configurável via env):
 
 ## Provably Fair
 
-Implementação de referência: **Bustabit-style** (HMAC-SHA256 + house edge 1/33). Detalhes conceituais em `prompts/prompt-1/output.md §1.6`.
+Implementação de referência: **Bustabit-style** (HMAC-SHA256 + house edge 1/20 — 5% de instant-crash no 1.00x). Detalhes conceituais em `prompts/prompt-1/output.md §1.6`.
 
 Regras:
 1. No boot, se não houver hash chain persistida, gere N=10.000 seeds: `seed[i] = sha256(seed[i+1])`. Persiste `seed[0]` (hash raiz) como commitment público.
