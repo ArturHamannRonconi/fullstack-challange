@@ -21,6 +21,21 @@ services:
       retries: 10
 
   # ---------------------------------------------------------------------------
+  # Redis (NoSQL: round-state cache — crashPoint + startedAt per round)
+  # ---------------------------------------------------------------------------
+  redis:
+    image: redis:7.4-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  # ---------------------------------------------------------------------------
   # RabbitMQ (with management UI)
   # ---------------------------------------------------------------------------
   rabbitmq:
@@ -92,12 +107,14 @@ services:
         condition: service_healthy
 
   # ---------------------------------------------------------------------------
-  # Games Service
+  # Games Service (build context is the monorepo root so Bun can resolve
+  # workspace:* packages — @crash/auth, @crash/domain, @crash/events,
+  # @crash/game, @crash/provably-fair).
   # ---------------------------------------------------------------------------
   games:
     build:
-      context: ./services/games
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./services/games/Dockerfile
     ports:
       - "4001:4001"
     env_file:
@@ -107,16 +124,19 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
+      redis:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "curl -sf http://localhost:4001/health || exit 1"]
+      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1:4001/health || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 10
-      start_period: 15s
+      start_period: 30s
 
   # ---------------------------------------------------------------------------
-  # Wallets Service (build context is monorepo root so Bun can resolve
-  # workspace:* packages — @crash/auth, @crash/domain).
+  # Wallets Service
   # ---------------------------------------------------------------------------
   wallets:
     build:
@@ -134,14 +154,41 @@ services:
       keycloak:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "wget -q --spider http://localhost:4002/health || exit 1"]
+      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1:4002/health || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 10
       start_period: 30s
 
   # ---------------------------------------------------------------------------
-  # Frontend (placeholder — candidate implements)
+  # Websockets Service (game loop orchestrator + socket.io gateway).
+  # ---------------------------------------------------------------------------
+  websockets:
+    build:
+      context: .
+      dockerfile: ./services/websockets/Dockerfile
+    ports:
+      - "4003:4003"
+    env_file:
+      - ./services/websockets/.env
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      games:
+        condition: service_healthy
+      wallets:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1:4003/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+
+  # ---------------------------------------------------------------------------
+  # Frontend
   # ---------------------------------------------------------------------------
   frontend:
     build:
@@ -151,7 +198,9 @@ services:
       - "3000:3000"
     depends_on:
       - kong
+      - websockets
 
 volumes:
   postgres_data:
   rabbitmq_data:
+  redis_data:

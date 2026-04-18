@@ -5,6 +5,7 @@ plugins:
     config:
       origins:
         - http://localhost:3000
+        - http://localhost:5173
       methods:
         - GET
         - POST
@@ -34,3 +35,12 @@ services:
         paths:
           - /wallets
         strip_path: true
+
+  - name: websockets-service
+    url: http://websockets:4003
+    protocol: http
+    routes:
+      - name: ws-routes
+        paths:
+          - /ws
+        strip_path: false

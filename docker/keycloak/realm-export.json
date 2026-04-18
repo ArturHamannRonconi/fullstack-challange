@@ -58,6 +58,21 @@
           "temporary": false
         }
       ]
+    },
+    {
+      "username": "arturhr",
+      "email": "arturhr@crash-game.dev",
+      "firstName": "Artur",
+      "lastName": "HR",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "a5588965r",
+          "temporary": false
+        }
+      ]
     }
   ]
 }

@@ -1,0 +1,150 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  unit:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      # Some unit tests import types from Prisma's generated client even
+      # without connecting — ensure it exists before running tests.
+      - name: Generate Prisma client (games)
+        run: bun run prisma:generate
+        working-directory: services/games
+
+      - name: Generate Prisma client (wallets)
+        run: bun run prisma:generate
+        working-directory: services/wallets
+
+      # Packages — separate steps so a failure names the culprit.
+      - name: Packages / @crash/provably-fair
+        run: bun test
+        working-directory: packages/provably-fair
+
+      - name: Packages / @crash/domain
+        run: bun test
+        working-directory: packages/domain
+
+      - name: Packages / @crash/events
+        run: bun test
+        working-directory: packages/events
+
+      - name: Packages / @crash/game
+        run: bun test
+        working-directory: packages/game
+
+      - name: Packages / @crash/real-time-db
+        run: bun test
+        working-directory: packages/real-time-db
+
+      - name: Packages / @crash/utils
+        run: bun test
+        working-directory: packages/utils
+
+      - name: Packages / @crash/auth
+        run: bun test
+        working-directory: packages/auth
+
+      # Services — `test` script is already scoped to tests/unit in each package.json.
+      - name: Services / games (unit)
+        run: bun test tests/unit
+        working-directory: services/games
+
+      - name: Services / wallets (unit)
+        run: bun test tests/unit
+        working-directory: services/wallets
+
+      - name: Services / websockets (unit)
+        run: bun test tests/unit
+        working-directory: services/websockets
+
+  integration:
+    name: Integration tests
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_USER: admin
+          POSTGRES_PASSWORD: admin
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U admin"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Install postgres client
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+
+      - name: Create games + wallets databases
+        env:
+          PGPASSWORD: admin
+        run: |
+          psql -h localhost -U admin -d postgres -c "CREATE DATABASE games;"
+          psql -h localhost -U admin -d postgres -c "CREATE DATABASE wallets;"
+
+      - name: Generate Prisma client (games)
+        run: bun run prisma:generate
+        working-directory: services/games
+
+      - name: Generate Prisma client (wallets)
+        run: bun run prisma:generate
+        working-directory: services/wallets
+
+      - name: Apply Prisma migrations (games)
+        env:
+          DATABASE_URL: postgresql://admin:admin@localhost:5432/games
+        run: bun run prisma:deploy
+        working-directory: services/games
+
+      - name: Apply Prisma migrations (wallets)
+        env:
+          DATABASE_URL: postgresql://admin:admin@localhost:5432/wallets
+        run: bun run prisma:deploy
+        working-directory: services/wallets
+
+      - name: Services / games (integration)
+        env:
+          TEST_DATABASE_URL: postgresql://admin:admin@localhost:5432/games
+        run: bun test tests/integration
+        working-directory: services/games
+
+      - name: Services / wallets (integration)
+        env:
+          TEST_DATABASE_URL: postgresql://admin:admin@localhost:5432/wallets
+        run: bun test tests/integration
+        working-directory: services/wallets
+
+      - name: Services / websockets (integration)
+        run: bun test tests/integration
+        working-directory: services/websockets
