@@ -1,0 +1,19 @@
+{
+  "name": "@crash/events",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "test": "bun test"
+  },
+  "dependencies": {
+    "amqp-connection-manager": "^4.1.14"
+  },
+  "devDependencies": {
+    "@types/amqplib": "^0.10.5",
+    "typescript": "^5.8.3"
+  }
+}

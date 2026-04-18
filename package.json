@@ -7,9 +7,15 @@
     "frontend"
   ],
   "scripts": {
-    "docker:up": "docker compose up",
+    "docker:up": "docker compose up --build",
     "docker:down": "docker compose down",
-    "docker:prune": "docker compose down -v --rmi all --remove-orphans && docker volume prune -f"
+    "docker:prune": "docker compose down -v --rmi all --remove-orphans && docker volume prune -f",
+    "test": "bun run test:unit",
+    "test:unit": "bun --filter '@crash/*' test",
+    "test:integration": "bun --filter '@crash/*' test:integration",
+    "test:e2e": "bun --filter '@crash/*' test:e2e",
+    "test:browser": "bun test tests/browser",
+    "test:all": "bun run test:unit && bun run test:integration && bun run test:browser && bun run test:e2e"
   },
   "devDependencies": {
     "bun-types": "latest",

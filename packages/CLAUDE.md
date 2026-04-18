@@ -111,7 +111,7 @@ verifyCommitment(serverSeed: string, expectedHash: string): boolean;
 generateHashChain(length: number, terminalSeed?: string): string[];  // [seed[0], seed[1], ...]
 ```
 
-Implementação: HMAC-SHA256 + house edge 1/33 (Bustabit). Vetores de teste conhecidos para regressão.
+Implementação: HMAC-SHA256 + house edge 1/20 (5% de instant-crash no 1.00x). Vetores de teste conhecidos para regressão.
 
 **Mesma função usada no backend (game loop) e no frontend (modal de verificação).** Essa é a razão deste pacote existir.
 

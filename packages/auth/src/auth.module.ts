@@ -1,4 +1,4 @@
-import { Module, type DynamicModule } from "@nestjs/common";
+import { Module,DynamicModule } from "@nestjs/common";
 import { APP_GUARD } from "@nestjs/core";
 import { PassportModule } from "@nestjs/passport";
 import { AUTH_MODULE_OPTIONS } from "./auth.constants";
