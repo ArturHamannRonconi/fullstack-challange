@@ -5,9 +5,14 @@ import { MoneyValueObject } from "@crash/domain";
 import { CreateWalletService } from "../../../src/application/services/create-wallet/create-wallet.service";
 import { UserIdValueObject } from "../../../src/domain/value-objects/user-id/user-id.value-object";
 import { WalletAggregateRoot } from "../../../src/domain/wallet.aggregate-root";
-import type { WalletRepository } from "../../../src/infrastructure/database/repositories/wallet.repository";
+import { WalletRepository } from "../../../src/infrastructure/database/repositories/wallet.repository";
+import { WalletBalanceStore } from "../../../src/infrastructure/nosql/wallet-balance.store";
 
 const USER_UUID = "3ae7b3e4-8f10-4e3e-9e92-7b3fbd9e9c42";
+
+function stubBalanceStore(): WalletBalanceStore {
+  return { set: mock(async () => {}), get: mock(async () => null) } as unknown as WalletBalanceStore;
+}
 
 function buildWallet(balanceCents = 50_000n) {
   return WalletAggregateRoot.init({
@@ -28,6 +33,7 @@ function repoMock(existing: WalletAggregateRoot | null): WalletRepository {
     findByUserId: mock(() => Promise.resolve(existing)),
     findById: mock(() => Promise.resolve(existing)),
     save: mock(() => Promise.resolve()),
+    findAllWithReservesForRound: mock(() => Promise.resolve([])),
   };
 }
 
@@ -38,7 +44,7 @@ describe("CreateWalletService", () => {
 
   it("creates a new wallet with initial balance + DEPOSIT op and persists it", async () => {
     const repo = repoMock(null);
-    const service = new CreateWalletService(repo);
+    const service = new CreateWalletService(repo, stubBalanceStore());
 
     const out = await service.execute({ userId: USER_UUID });
     expect(out.isSuccess).toBe(true);
@@ -59,7 +65,7 @@ describe("CreateWalletService", () => {
   it("respects a custom WALLET_INITIAL_BALANCE_CENTS env var", async () => {
     process.env.WALLET_INITIAL_BALANCE_CENTS = "12345";
     const repo = repoMock(null);
-    const service = new CreateWalletService(repo);
+    const service = new CreateWalletService(repo, stubBalanceStore());
 
     const out = await service.execute({ userId: USER_UUID });
     expect(out.isSuccess).toBe(true);
@@ -70,7 +76,7 @@ describe("CreateWalletService", () => {
   it("is idempotent: returns the existing wallet without saving", async () => {
     const existing = buildWallet(42_000n);
     const repo = repoMock(existing);
-    const service = new CreateWalletService(repo);
+    const service = new CreateWalletService(repo, stubBalanceStore());
 
     const out = await service.execute({ userId: USER_UUID });
     expect(out.isSuccess).toBe(true);
@@ -85,7 +91,7 @@ describe("CreateWalletService", () => {
 
   it("rejects an invalid userId (UUID expected)", async () => {
     const repo = repoMock(null);
-    const service = new CreateWalletService(repo);
+    const service = new CreateWalletService(repo, stubBalanceStore());
 
     const out = await service.execute({ userId: "not-a-uuid" });
     expect(out.isFailure).toBe(true);
@@ -99,8 +105,9 @@ describe("CreateWalletService", () => {
       findByUserId: mock(() => Promise.resolve(null)),
       findById: mock(() => Promise.resolve(null)),
       save: mock(() => Promise.reject(new Error("boom"))),
+      findAllWithReservesForRound: mock(() => Promise.resolve([])),
     };
-    const service = new CreateWalletService(repo);
+    const service = new CreateWalletService(repo, stubBalanceStore());
 
     const out = await service.execute({ userId: USER_UUID });
     expect(out.isFailure).toBe(true);
@@ -112,8 +119,9 @@ describe("CreateWalletService", () => {
       findByUserId: mock(() => Promise.reject(new Error("db down"))),
       findById: mock(() => Promise.resolve(null)),
       save: mock(() => Promise.resolve()),
+      findAllWithReservesForRound: mock(() => Promise.resolve([])),
     };
-    const service = new CreateWalletService(repo);
+    const service = new CreateWalletService(repo, stubBalanceStore());
 
     const out = await service.execute({ userId: USER_UUID });
     expect(out.isFailure).toBe(true);
@@ -123,7 +131,7 @@ describe("CreateWalletService", () => {
   it("falls back to 50000 cents when WALLET_INITIAL_BALANCE_CENTS is unset", async () => {
     delete process.env.WALLET_INITIAL_BALANCE_CENTS;
     const repo = repoMock(null);
-    const service = new CreateWalletService(repo);
+    const service = new CreateWalletService(repo, stubBalanceStore());
 
     const out = await service.execute({ userId: USER_UUID });
     const { wallet } = out.result as { wallet: WalletAggregateRoot };

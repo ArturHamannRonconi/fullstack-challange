@@ -1,11 +1,11 @@
 import { Injectable } from "@nestjs/common";
 import type { IUnidirectionalMapper } from "ddd-tool-kit";
 
-import type { WalletAggregateRoot } from "../../domain/wallet.aggregate-root";
+import { WalletAggregateRoot } from "../../domain/wallet.aggregate-root";
 import {
-  OperationResponseDto,
-  ReserveResponseDto,
   WalletResponseDto,
+  ReserveResponseDto,
+  OperationResponseDto,
 } from "../dtos/wallet.response.dto";
 
 @Injectable()

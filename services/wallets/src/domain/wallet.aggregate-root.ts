@@ -2,7 +2,7 @@ import {
   Aggregate,
   DateValueObject,
   IdValueObject,
-  IError,
+  type IError,
   Output,
   verifyAllPropsExists,
   verifyAreEntities,
@@ -13,7 +13,7 @@ import { MoneyValueObject } from "@crash/domain";
 import { OperationEntity } from "./entities/operation/operation.entity";
 import { ReserveEntity } from "./entities/reserve/reserve.entity";
 import { OperationTypeValueObject } from "./value-objects/operation-type/operation-type.value-object";
-import { IWalletProps } from "./wallet.props";
+import type { IWalletProps } from "./wallet.props";
 import {
   AMOUNT_OUT_OF_RANGE,
   INSUFFICIENT_FUNDS,

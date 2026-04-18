@@ -6,10 +6,10 @@ import {
   type Type,
   ValidationPipe,
 } from "@nestjs/common";
-import type { INestApplication } from "@nestjs/common";
+import { INestApplication } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
 import { Test } from "@nestjs/testing";
-import { IS_PUBLIC_KEY, JwtAuthGuard, type AuthenticatedUser } from "@crash/auth";
+import { IS_PUBLIC_KEY, JwtAuthGuard,AuthenticatedUser } from "@crash/auth";
 
 // Wire-format parity with production `main.ts`: BigInt must serialize as a string.
 (BigInt.prototype as unknown as { toJSON: () => string }).toJSON = function toJSON() {

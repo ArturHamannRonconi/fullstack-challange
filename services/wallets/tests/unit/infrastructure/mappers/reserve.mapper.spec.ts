@@ -4,7 +4,7 @@ import { MoneyValueObject } from "@crash/domain";
 
 import { ReserveEntity } from "../../../../src/domain/entities/reserve/reserve.entity";
 import { ReserveMapper } from "../../../../src/infrastructure/database/mappers/reserve.mapper";
-import type { IReserveSchema } from "../../../../src/infrastructure/database/schema/wallet.schema";
+import { IReserveSchema } from "../../../../src/infrastructure/database/schema/wallet.schema";
 
 describe("ReserveMapper", () => {
   const mapper = new ReserveMapper();

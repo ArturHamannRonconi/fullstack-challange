@@ -10,7 +10,7 @@ import { WalletAggregateRoot } from "../../../../src/domain/wallet.aggregate-roo
 import { OperationMapper } from "../../../../src/infrastructure/database/mappers/operation.mapper";
 import { ReserveMapper } from "../../../../src/infrastructure/database/mappers/reserve.mapper";
 import { WalletMapper } from "../../../../src/infrastructure/database/mappers/wallet.mapper";
-import type { IWalletSchema } from "../../../../src/infrastructure/database/schema/wallet.schema";
+import { IWalletSchema } from "../../../../src/infrastructure/database/schema/wallet.schema";
 
 const USER_UUID = "3ae7b3e4-8f10-4e3e-9e92-7b3fbd9e9c42";
 

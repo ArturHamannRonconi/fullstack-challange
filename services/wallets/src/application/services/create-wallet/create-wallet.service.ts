@@ -1,7 +1,7 @@
 import { Inject, Injectable, Logger } from "@nestjs/common";
 import {
   DateValueObject,
-  IError,
+  type IError,
   IdValueObject,
   Output,
   throwFailOutput,
@@ -16,9 +16,10 @@ import {
   WALLET_REPOSITORY,
   type WalletRepository,
 } from "../../../infrastructure/database/repositories/wallet.repository";
-import { Service } from "../service.interface";
-import { ICreateWalletInput } from "./create-wallet.input";
-import { ICreateWalletOutput } from "./create-wallet.output";
+import { WalletBalanceStore } from "../../../infrastructure/nosql/wallet-balance.store";
+import type { Service } from "../service.interface";
+import type { ICreateWalletInput } from "./create-wallet.input";
+import type { ICreateWalletOutput } from "./create-wallet.output";
 
 @Injectable()
 export class CreateWalletService implements Service<ICreateWalletInput, ICreateWalletOutput> {
@@ -27,6 +28,7 @@ export class CreateWalletService implements Service<ICreateWalletInput, ICreateW
 
   constructor(
     @Inject(WALLET_REPOSITORY) private readonly walletRepository: WalletRepository,
+    private readonly balanceStore: WalletBalanceStore,
   ) {
     const raw = process.env.WALLET_INITIAL_BALANCE_CENTS ?? "50000";
     this.initialBalanceCents = BigInt(raw);
@@ -42,6 +44,9 @@ export class CreateWalletService implements Service<ICreateWalletInput, ICreateW
 
       const existing = await this.walletRepository.findByUserId(userId);
       if (existing) {
+        // Rehydrate Redis so downstream read-paths (games' PlaceBet) don't
+        // 404 after cache loss / volume reset when Postgres still has the row.
+        await this.balanceStore.set(existing);
         return Output.success({ wallet: existing, wasCreated: false });
       }
 
@@ -67,6 +72,7 @@ export class CreateWalletService implements Service<ICreateWalletInput, ICreateW
 
       const wallet = walletOutput.result as WalletAggregateRoot;
       await this.walletRepository.save(wallet);
+      await this.balanceStore.set(wallet);
 
       return Output.success({ wallet, wasCreated: true });
     } catch (error) {

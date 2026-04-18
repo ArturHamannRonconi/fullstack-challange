@@ -6,7 +6,7 @@ import {
 } from "ddd-tool-kit";
 
 import { INVALID_OPERATION } from "./operation.errors";
-import { IOperationProps } from "./operation.props";
+import type { IOperationProps } from "./operation.props";
 
 class OperationEntity extends Entity<IOperationProps> {
   private constructor(props: IOperationProps) {

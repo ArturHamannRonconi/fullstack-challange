@@ -1,4 +1,4 @@
-import { Prisma } from "@prisma/client";
+import { Prisma } from "../generated";
 
 export const walletInclude = {
   operations: {
@@ -8,4 +8,4 @@ export const walletInclude = {
 } satisfies Prisma.WalletInclude;
 
 export type IWalletSchema = Prisma.WalletGetPayload<{ include: typeof walletInclude }>;
-export type { Operation as IOperationSchema, Reserve as IReserveSchema } from "@prisma/client";
+export type { Operation as IOperationSchema, Reserve as IReserveSchema } from "../generated";

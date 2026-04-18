@@ -5,9 +5,14 @@ import { MoneyValueObject } from "@crash/domain";
 import { DepositService } from "../../../src/application/services/deposit/deposit.service";
 import { UserIdValueObject } from "../../../src/domain/value-objects/user-id/user-id.value-object";
 import { WalletAggregateRoot } from "../../../src/domain/wallet.aggregate-root";
-import type { WalletRepository } from "../../../src/infrastructure/database/repositories/wallet.repository";
+import { WalletRepository } from "../../../src/infrastructure/database/repositories/wallet.repository";
+import { WalletBalanceStore } from "../../../src/infrastructure/nosql/wallet-balance.store";
 
 const USER_UUID = "3ae7b3e4-8f10-4e3e-9e92-7b3fbd9e9c42";
+
+function stubBalanceStore(): WalletBalanceStore {
+  return { set: mock(async () => {}), get: mock(async () => null) } as unknown as WalletBalanceStore;
+}
 
 function buildWallet(balanceCents = 50_000n) {
   return WalletAggregateRoot.init({
@@ -28,6 +33,7 @@ function repoMock(wallet: WalletAggregateRoot | null): WalletRepository {
     findByUserId: mock(() => Promise.resolve(wallet)),
     findById: mock(() => Promise.resolve(wallet)),
     save: mock(() => Promise.resolve()),
+    findAllWithReservesForRound: mock(() => Promise.resolve([])),
   };
 }
 
@@ -35,7 +41,7 @@ describe("DepositService", () => {
   it("deposits funds successfully and saves the wallet", async () => {
     const wallet = buildWallet(50_000n);
     const repo = repoMock(wallet);
-    const service = new DepositService(repo);
+    const service = new DepositService(repo, stubBalanceStore());
 
     const out = await service.execute({ userId: USER_UUID, amountCents: "1000" });
     expect(out.isSuccess).toBe(true);
@@ -46,7 +52,7 @@ describe("DepositService", () => {
 
   it("returns 404 when the wallet does not exist", async () => {
     const repo = repoMock(null);
-    const service = new DepositService(repo);
+    const service = new DepositService(repo, stubBalanceStore());
 
     const out = await service.execute({ userId: USER_UUID, amountCents: "1000" });
     expect(out.isFailure).toBe(true);
@@ -56,7 +62,7 @@ describe("DepositService", () => {
 
   it("rejects an invalid userId without touching the repo", async () => {
     const repo = repoMock(buildWallet());
-    const service = new DepositService(repo);
+    const service = new DepositService(repo, stubBalanceStore());
 
     const out = await service.execute({
       userId: "invalid",
@@ -68,7 +74,7 @@ describe("DepositService", () => {
 
   it("rejects a non-numeric amount string", async () => {
     const repo = repoMock(buildWallet());
-    const service = new DepositService(repo);
+    const service = new DepositService(repo, stubBalanceStore());
 
     const out = await service.execute({ userId: USER_UUID, amountCents: "abc" });
     expect(out.isFailure).toBe(true);
@@ -78,7 +84,7 @@ describe("DepositService", () => {
   it("rejects deposit below the minimum (100 cents) with 422", async () => {
     const wallet = buildWallet();
     const repo = repoMock(wallet);
-    const service = new DepositService(repo);
+    const service = new DepositService(repo, stubBalanceStore());
 
     const out = await service.execute({ userId: USER_UUID, amountCents: "50" });
     expect(out.isFailure).toBe(true);
@@ -89,7 +95,7 @@ describe("DepositService", () => {
   it("rejects deposit above the maximum (100_000 cents) with 422", async () => {
     const wallet = buildWallet();
     const repo = repoMock(wallet);
-    const service = new DepositService(repo);
+    const service = new DepositService(repo, stubBalanceStore());
 
     const out = await service.execute({
       userId: USER_UUID,
@@ -104,8 +110,9 @@ describe("DepositService", () => {
       findByUserId: mock(() => Promise.reject(new Error("boom"))),
       findById: mock(() => Promise.resolve(null)),
       save: mock(() => Promise.resolve()),
+      findAllWithReservesForRound: mock(() => Promise.resolve([])),
     };
-    const service = new DepositService(repo);
+    const service = new DepositService(repo, stubBalanceStore());
 
     const out = await service.execute({ userId: USER_UUID, amountCents: "1000" });
     expect(out.isFailure).toBe(true);
@@ -118,8 +125,9 @@ describe("DepositService", () => {
       findByUserId: mock(() => Promise.resolve(wallet)),
       findById: mock(() => Promise.resolve(wallet)),
       save: mock(() => Promise.reject(new Error("db down"))),
+      findAllWithReservesForRound: mock(() => Promise.resolve([])),
     };
-    const service = new DepositService(repo);
+    const service = new DepositService(repo, stubBalanceStore());
 
     const out = await service.execute({ userId: USER_UUID, amountCents: "1000" });
     expect(out.isFailure).toBe(true);

@@ -10,12 +10,12 @@ import {
   CurrentUser,
   JwtAuthGuard,
 } from "@crash/auth";
-import type { IError } from "ddd-tool-kit";
+import { type IError } from "ddd-tool-kit";
 
 import { GetMyWalletService } from "../../application/services/get-my-wallet/get-my-wallet.service";
 import { WalletResponseDto } from "../dtos/wallet.response.dto";
 import { WalletResponseMapper } from "../mappers/wallet-response.mapper";
-import { toNestException } from "./output-exception";
+import { toNestException } from "@crash/utils";
 
 @ApiTags("wallets")
 @Controller()

@@ -1,6 +1,6 @@
 import {
   DateValueObject,
-  IBidirectionalMapper,
+  type IBidirectionalMapper,
   IdValueObject,
 } from "ddd-tool-kit";
 import { MoneyValueObject } from "@crash/domain";
@@ -8,7 +8,7 @@ import { Injectable } from "@nestjs/common";
 
 import { WalletAggregateRoot } from "../../../domain/wallet.aggregate-root";
 import { UserIdValueObject } from "../../../domain/value-objects/user-id/user-id.value-object";
-import { IWalletSchema } from "../schema/wallet.schema";
+import type { IWalletSchema } from "../schema/wallet.schema";
 import { OperationMapper } from "./operation.mapper";
 import { ReserveMapper } from "./reserve.mapper";
 

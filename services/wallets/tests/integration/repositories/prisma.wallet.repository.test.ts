@@ -2,7 +2,7 @@ import "reflect-metadata";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "bun:test";
 import { DateValueObject, IdValueObject } from "ddd-tool-kit";
 import { MoneyValueObject } from "@crash/domain";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "../../../src/infrastructure/database/generated";
 
 import { OperationEntity } from "../../../src/domain/entities/operation/operation.entity";
 import { ReserveEntity } from "../../../src/domain/entities/reserve/reserve.entity";

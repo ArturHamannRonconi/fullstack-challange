@@ -7,14 +7,9 @@
  * `bun test` invocation concurrently — this runner forks one invocation per
  * file so each test file sees deterministic state.
  */
-import { spawn } from "node:child_process";
-import { readdirSync } from "node:fs";
-import { join } from "node:path";
 
 const dir = "tests/e2e";
-const files = readdirSync(dir)
-  .filter((f) => f.endsWith(".e2e.test.ts"))
-  .sort();
+const files = Array.from(new Bun.Glob("*.e2e.test.ts").scanSync(dir)).sort();
 
 if (files.length === 0) {
   console.error(`No *.e2e.test.ts files found in ${dir}`);
@@ -23,12 +18,10 @@ if (files.length === 0) {
 
 let exitCode = 0;
 for (const file of files) {
-  const fullPath = join(dir, file);
+  const fullPath = `${dir}/${file}`;
   console.log(`\n\x1b[1m=== ${fullPath} ===\x1b[0m`);
-  const code = await new Promise<number>((resolve) => {
-    const child = spawn("bun", ["test", fullPath], { stdio: "inherit" });
-    child.on("exit", (c) => resolve(c ?? 1));
-  });
+  const child = Bun.spawn(["bun", "test", fullPath], { stdio: ["inherit", "inherit", "inherit"] });
+  const code = await child.exited;
   if (code !== 0) {
     exitCode = code;
     break;

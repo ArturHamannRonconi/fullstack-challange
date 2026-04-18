@@ -1,7 +1,7 @@
-import type { DateValueObject, IBaseDomainEntity } from "ddd-tool-kit";
-import type { MoneyValueObject } from "@crash/domain";
+import { DateValueObject, type IBaseDomainEntity } from "ddd-tool-kit";
+import { MoneyValueObject } from "@crash/domain";
 
-import type { OperationTypeValueObject } from "../../value-objects/operation-type/operation-type.value-object";
+import { OperationTypeValueObject } from "../../value-objects/operation-type/operation-type.value-object";
 
 export interface IOperationProps extends IBaseDomainEntity {
   type: OperationTypeValueObject;

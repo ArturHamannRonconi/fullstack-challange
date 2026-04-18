@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "../../../src/infrastructure/database/generated";
 
 import { DATABASE_URL } from "./constants";
 

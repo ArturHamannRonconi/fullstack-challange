@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, describe, expect, it } from "bun:test";
-import type { APIRequestContext } from "playwright";
+import { APIRequestContext } from "playwright";
 
 import { makePublicApi, waitForWalletsUp } from "./helpers/api";
 

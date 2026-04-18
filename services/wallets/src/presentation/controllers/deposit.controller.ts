@@ -17,13 +17,14 @@ import {
   CurrentUser,
   JwtAuthGuard,
 } from "@crash/auth";
-import type { IError } from "ddd-tool-kit";
+
+import { type IError } from "ddd-tool-kit";
 
 import { DepositService } from "../../application/services/deposit/deposit.service";
 import { DepositRequestDto } from "../dtos/amount.dto";
 import { WalletResponseDto } from "../dtos/wallet.response.dto";
 import { WalletResponseMapper } from "../mappers/wallet-response.mapper";
-import { toNestException } from "./output-exception";
+import { toNestException } from "@crash/utils";
 
 @ApiTags("wallets")
 @Controller()

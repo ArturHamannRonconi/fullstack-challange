@@ -1,6 +1,6 @@
 import {
   DateValueObject,
-  IBidirectionalMapper,
+  type IBidirectionalMapper,
   IdValueObject,
 } from "ddd-tool-kit";
 import { MoneyValueObject } from "@crash/domain";
@@ -8,7 +8,7 @@ import { MoneyValueObject } from "@crash/domain";
 import { OperationEntity } from "../../../domain/entities/operation/operation.entity";
 import { OperationTypeValueObject } from "../../../domain/value-objects/operation-type/operation-type.value-object";
 import type { OperationType } from "../../../domain/value-objects/operation-type/operation-type.props";
-import { IOperationSchema } from "../schema/wallet.schema";
+import type { IOperationSchema } from "../schema/wallet.schema";
 
 class OperationMapper implements IBidirectionalMapper<IOperationSchema, OperationEntity> {
   toRightSide(leftSide: IOperationSchema): OperationEntity {

@@ -5,7 +5,6 @@ import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 
 import { AppModule } from "./app.module";
 
-// JSON cannot natively serialize BigInt; emit it as a string (our wire contract).
 (BigInt.prototype as unknown as { toJSON: () => string }).toJSON = function toJSON() {
   return this.toString();
 };
@@ -27,8 +26,11 @@ async function bootstrap(): Promise<void> {
     .setVersion("1.0.0")
     .addBearerAuth()
     .build();
+
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup("docs", app, document);
+
+  app.enableShutdownHooks();
 
   const port = Number(process.env.PORT ?? 4002);
   await app.listen(port, "0.0.0.0");

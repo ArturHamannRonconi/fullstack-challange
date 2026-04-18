@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it, mock } from "bun:test";
-import type { INestApplication } from "@nestjs/common";
+import { INestApplication } from "@nestjs/common";
 import { DateValueObject, IdValueObject, Output } from "ddd-tool-kit";
 import { MoneyValueObject } from "@crash/domain";
 

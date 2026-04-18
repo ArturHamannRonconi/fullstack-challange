@@ -1,7 +1,7 @@
 import { Output, ValueObject } from "ddd-tool-kit";
 
 import { INVALID_OPERATION_TYPE } from "./operation-type.errors";
-import { IOperationTypeProps, OPERATION_TYPES, OperationType } from "./operation-type.props";
+import { type IOperationTypeProps, OPERATION_TYPES, type OperationType } from "./operation-type.props";
 
 class OperationTypeValueObject extends ValueObject<IOperationTypeProps> {
   private constructor(props: IOperationTypeProps) {

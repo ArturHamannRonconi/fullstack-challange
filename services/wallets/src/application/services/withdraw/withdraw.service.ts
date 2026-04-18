@@ -1,5 +1,5 @@
 import { Inject, Injectable, Logger } from "@nestjs/common";
-import { IError, Output, throwFailOutput } from "ddd-tool-kit";
+import { type IError, Output, throwFailOutput } from "ddd-tool-kit";
 import { MoneyValueObject } from "@crash/domain";
 
 import { UserIdValueObject } from "../../../domain/value-objects/user-id/user-id.value-object";
@@ -8,9 +8,10 @@ import {
   WALLET_REPOSITORY,
   type WalletRepository,
 } from "../../../infrastructure/database/repositories/wallet.repository";
-import { Service } from "../service.interface";
-import { IWithdrawInput } from "./withdraw.input";
-import { IWithdrawOutput } from "./withdraw.output";
+import { WalletBalanceStore } from "../../../infrastructure/nosql/wallet-balance.store";
+import type { Service } from "../service.interface";
+import type { IWithdrawInput } from "./withdraw.input";
+import type { IWithdrawOutput } from "./withdraw.output";
 
 @Injectable()
 export class WithdrawService implements Service<IWithdrawInput, IWithdrawOutput> {
@@ -18,6 +19,7 @@ export class WithdrawService implements Service<IWithdrawInput, IWithdrawOutput>
 
   constructor(
     @Inject(WALLET_REPOSITORY) private readonly walletRepository: WalletRepository,
+    private readonly balanceStore: WalletBalanceStore,
   ) {}
 
   async execute(input: IWithdrawInput): Promise<Output<IWithdrawOutput> | Output<IError>> {
@@ -37,6 +39,8 @@ export class WithdrawService implements Service<IWithdrawInput, IWithdrawOutput>
       if (withdrawn.isFailure) return throwFailOutput(withdrawn);
 
       await this.walletRepository.save(wallet);
+      await this.balanceStore.set(wallet);
+
       return Output.success({ wallet });
     } catch (error) {
       this.logger.error("Failed to withdraw funds", error as Error);

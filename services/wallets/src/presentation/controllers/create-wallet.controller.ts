@@ -1,28 +1,31 @@
 import {
+  Res,
+  Post,
+  UseGuards,
   Controller,
   HttpStatus,
-  Post,
-  Res,
-  UseGuards,
 } from "@nestjs/common";
+
 import type { Response } from "express";
+
 import {
+  ApiTags,
+  ApiOperation,
   ApiBearerAuth,
   ApiCreatedResponse,
-  ApiOperation,
-  ApiTags,
 } from "@nestjs/swagger";
+
 import {
   type AuthenticatedUser,
   CurrentUser,
   JwtAuthGuard,
 } from "@crash/auth";
-import type { IError } from "ddd-tool-kit";
+import { type IError } from "ddd-tool-kit";
 
 import { CreateWalletService } from "../../application/services/create-wallet/create-wallet.service";
 import { WalletResponseDto } from "../dtos/wallet.response.dto";
 import { WalletResponseMapper } from "../mappers/wallet-response.mapper";
-import { toNestException } from "./output-exception";
+import { toNestException } from "@crash/utils";
 
 @ApiTags("wallets")
 @Controller()

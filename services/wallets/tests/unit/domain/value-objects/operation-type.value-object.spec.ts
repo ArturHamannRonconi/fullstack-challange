@@ -1,7 +1,7 @@
 import { describe, expect, it } from "bun:test";
 
 import { OperationTypeValueObject } from "../../../../src/domain/value-objects/operation-type/operation-type.value-object";
-import type { OperationType } from "../../../../src/domain/value-objects/operation-type/operation-type.props";
+import { OperationType } from "../../../../src/domain/value-objects/operation-type/operation-type.props";
 
 describe("OperationTypeValueObject", () => {
   describe("init", () => {

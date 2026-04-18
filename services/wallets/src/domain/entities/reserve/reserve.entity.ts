@@ -6,7 +6,7 @@ import {
 } from "ddd-tool-kit";
 
 import { INVALID_RESERVE } from "./reserve.errors";
-import { IReserveProps } from "./reserve.props";
+import type { IReserveProps } from "./reserve.props";
 
 class ReserveEntity extends Entity<IReserveProps> {
   private constructor(props: IReserveProps) {

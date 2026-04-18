@@ -5,7 +5,7 @@ import { MoneyValueObject } from "@crash/domain";
 import { OperationEntity } from "../../../../src/domain/entities/operation/operation.entity";
 import { OperationTypeValueObject } from "../../../../src/domain/value-objects/operation-type/operation-type.value-object";
 import { OperationMapper } from "../../../../src/infrastructure/database/mappers/operation.mapper";
-import type { IOperationSchema } from "../../../../src/infrastructure/database/schema/wallet.schema";
+import { IOperationSchema } from "../../../../src/infrastructure/database/schema/wallet.schema";
 
 describe("OperationMapper", () => {
   const mapper = new OperationMapper();

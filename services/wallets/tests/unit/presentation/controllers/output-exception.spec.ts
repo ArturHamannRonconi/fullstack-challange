@@ -9,7 +9,7 @@ import {
   UnprocessableEntityException,
 } from "@nestjs/common";
 
-import { toNestException } from "../../../../src/presentation/controllers/output-exception";
+import { toNestException } from "@crash/utils";
 
 describe("toNestException", () => {
   const cases: Array<[number, new (msg: string) => HttpException]> = [

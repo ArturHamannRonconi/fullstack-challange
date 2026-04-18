@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, describe, expect, it } from "bun:test";
-import type { INestApplication } from "@nestjs/common";
+import { INestApplication } from "@nestjs/common";
 
 import { HealthController } from "../../../src/presentation/controllers/health.controller";
 import { bootTestApp, http } from "./helpers/make-app";

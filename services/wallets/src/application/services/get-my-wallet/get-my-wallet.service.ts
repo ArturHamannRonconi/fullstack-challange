@@ -1,5 +1,5 @@
 import { Inject, Injectable, Logger } from "@nestjs/common";
-import { IError, Output, throwFailOutput } from "ddd-tool-kit";
+import { type IError, Output, throwFailOutput } from "ddd-tool-kit";
 
 import { UserIdValueObject } from "../../../domain/value-objects/user-id/user-id.value-object";
 import { WALLET_DOES_NOT_EXIST } from "../../../domain/wallet.errors";
@@ -7,9 +7,10 @@ import {
   WALLET_REPOSITORY,
   type WalletRepository,
 } from "../../../infrastructure/database/repositories/wallet.repository";
-import { Service } from "../service.interface";
-import { IGetMyWalletInput } from "./get-my-wallet.input";
-import { IGetMyWalletOutput } from "./get-my-wallet.output";
+import { WalletBalanceStore } from "../../../infrastructure/nosql/wallet-balance.store";
+import type { Service } from "../service.interface";
+import type { IGetMyWalletInput } from "./get-my-wallet.input";
+import type { IGetMyWalletOutput } from "./get-my-wallet.output";
 
 @Injectable()
 export class GetMyWalletService implements Service<IGetMyWalletInput, IGetMyWalletOutput> {
@@ -17,6 +18,7 @@ export class GetMyWalletService implements Service<IGetMyWalletInput, IGetMyWall
 
   constructor(
     @Inject(WALLET_REPOSITORY) private readonly walletRepository: WalletRepository,
+    private readonly balanceStore: WalletBalanceStore,
   ) {}
 
   async execute(
@@ -29,6 +31,10 @@ export class GetMyWalletService implements Service<IGetMyWalletInput, IGetMyWall
 
       const wallet = await this.walletRepository.findByUserId(userId);
       if (!wallet) return Output.fail(WALLET_DOES_NOT_EXIST);
+
+      // Defensive rehydrate: keeps games' PlaceBet path from 404-ing when
+      // Redis is cold but Postgres still has the wallet.
+      await this.balanceStore.set(wallet);
 
       return Output.success({ wallet });
     } catch (error) {

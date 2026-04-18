@@ -1,8 +1,8 @@
-import { IBidirectionalMapper, IdValueObject } from "ddd-tool-kit";
+import { type IBidirectionalMapper, IdValueObject } from "ddd-tool-kit";
 import { MoneyValueObject } from "@crash/domain";
 
 import { ReserveEntity } from "../../../domain/entities/reserve/reserve.entity";
-import { IReserveSchema } from "../schema/wallet.schema";
+import type { IReserveSchema } from "../schema/wallet.schema";
 
 class ReserveMapper implements IBidirectionalMapper<IReserveSchema, ReserveEntity> {
   toRightSide(leftSide: IReserveSchema): ReserveEntity {

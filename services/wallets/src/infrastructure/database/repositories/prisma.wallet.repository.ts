@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import type { IdValueObject } from "ddd-tool-kit";
+import { IdValueObject } from "ddd-tool-kit";
 
 import { UserIdValueObject } from "../../../domain/value-objects/user-id/user-id.value-object";
 import { WalletAggregateRoot } from "../../../domain/wallet.aggregate-root";
@@ -31,6 +31,21 @@ export class PrismaWalletRepository implements WalletRepository {
     });
     if (!schema) return null;
     return this.mapper.toRightSide(schema);
+  }
+
+  async findAllWithReservesForRound(roundId: string): Promise<WalletAggregateRoot[]> {
+    const reserves = await this.prisma.reserve.findMany({
+      where: { roundId },
+      select: { walletId: true },
+      distinct: ["walletId"],
+    });
+    if (reserves.length === 0) return [];
+
+    const wallets = await this.prisma.wallet.findMany({
+      where: { id: { in: reserves.map((r) => r.walletId) } },
+      include: walletInclude,
+    });
+    return wallets.map((w) => this.mapper.toRightSide(w));
   }
 
   async save(wallet: WalletAggregateRoot): Promise<void> {
