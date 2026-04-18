@@ -18,7 +18,7 @@ function LoginPage() {
   const auth = useAuth()
 
   if (auth.isAuthenticated) {
-    return <Navigate to="/dashboard" />
+    return <Navigate to="/game" />
   }
 
   return (

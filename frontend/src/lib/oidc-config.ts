@@ -1,5 +1,5 @@
 import { WebStorageStateStore } from 'oidc-client-ts'
-import type { AuthProviderProps } from 'react-oidc-context'
+import { AuthProviderProps } from 'react-oidc-context'
 
 export const KC_AUTHORITY = import.meta.env.VITE_KC_AUTHORITY as string
 export const KC_CLIENT_ID = import.meta.env.VITE_KC_CLIENT_ID as string
@@ -18,6 +18,6 @@ export const oidcConfig: AuthProviderProps = {
   userStore: new WebStorageStateStore({ store: window.sessionStorage }),
   stateStore: new WebStorageStateStore({ store: window.sessionStorage }),
   onSigninCallback: () => {
-    window.history.replaceState(null, '', '/dashboard')
+    window.history.replaceState(null, '', '/game')
   },
 }

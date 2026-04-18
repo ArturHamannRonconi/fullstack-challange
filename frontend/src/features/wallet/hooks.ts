@@ -8,7 +8,7 @@ import {
   getMyWallet,
   withdrawFunds,
 } from './api'
-import type { WalletDto } from './types'
+import { WalletDto } from './types'
 
 const WALLET_QUERY_KEY = ['wallet', 'me'] as const
 

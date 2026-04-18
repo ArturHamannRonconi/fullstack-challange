@@ -22,7 +22,7 @@ function RegisterPage() {
   const [isRedirecting, setIsRedirecting] = useState(false)
 
   if (auth.isAuthenticated) {
-    return <Navigate to="/dashboard" />
+    return <Navigate to="/game" />
   }
 
   const onClick = async () => {

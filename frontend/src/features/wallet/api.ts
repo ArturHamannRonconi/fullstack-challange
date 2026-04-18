@@ -1,5 +1,5 @@
 import { API_BASE_URL } from '@/lib/api'
-import type { ApiErrorShape, WalletDto } from './types'
+import { ApiErrorShape, WalletDto } from './types'
 
 export class WalletApiError extends Error {
   readonly status: number

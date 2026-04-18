@@ -17,7 +17,7 @@ function CallbackPage() {
   }, [auth.error])
 
   if (auth.isAuthenticated) {
-    return <Navigate to="/dashboard" />
+    return <Navigate to="/game" />
   }
 
   if (auth.error) {

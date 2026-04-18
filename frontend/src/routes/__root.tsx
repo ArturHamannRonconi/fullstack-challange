@@ -5,6 +5,7 @@ import { useAuth } from 'react-oidc-context'
 import { Button } from '@/components/ui/button'
 import { BalanceBadge } from '@/features/wallet/BalanceBadge'
 import { WalletBootstrap } from '@/features/wallet/WalletBootstrap'
+import { useGameSocket } from '@/features/game/useGameSocket'
 
 const TanStackRouterDevtools = import.meta.env.DEV
   ? lazy(() =>
@@ -19,6 +20,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 })
 
 function RootComponent() {
+  useGameSocket()
+
   return (
     <>
       <AppHeader />
@@ -45,23 +48,34 @@ function AppHeader() {
         <Link to="/" className="text-base font-semibold">
           Crash Game
         </Link>
-        {auth.isAuthenticated && (
-          <nav className="hidden items-center gap-3 text-sm text-muted-foreground md:flex">
-            <Link
-              to="/dashboard"
-              className="hover:text-foreground [&.active]:text-foreground"
-              activeOptions={{ exact: true }}
-            >
-              Dashboard
-            </Link>
+        <nav className="hidden items-center gap-3 text-sm text-muted-foreground md:flex">
+          <Link
+            to="/game"
+            className="hover:text-foreground [&.active]:text-foreground"
+          >
+            Crash
+          </Link>
+          <Link
+            to="/best-players"
+            className="hover:text-foreground [&.active]:text-foreground"
+          >
+            Best Players
+          </Link>
+          <Link
+            to="/verify"
+            className="hover:text-foreground [&.active]:text-foreground"
+          >
+            Verificador
+          </Link>
+          {auth.isAuthenticated && (
             <Link
               to="/wallet"
               className="hover:text-foreground [&.active]:text-foreground"
             >
               Carteira
             </Link>
-          </nav>
-        )}
+          )}
+        </nav>
       </div>
       <div className="flex items-center gap-3 text-sm">
         {auth.isAuthenticated ? (
