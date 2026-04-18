@@ -1,0 +1,34 @@
+{
+  "name": "@crash/websockets",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "dev": "bun run --watch src/main.ts",
+    "start": "bun run src/main.ts",
+    "test": "bun test tests/unit",
+    "test:integration": "bun test tests/integration"
+  },
+  "dependencies": {
+    "@crash/events": "workspace:*",
+    "@crash/game": "workspace:*",
+    "@crash/real-time-db": "workspace:*",
+    "@nestjs/common": "^11.1.17",
+    "@nestjs/core": "^11.1.17",
+    "@nestjs/platform-express": "^11.1.17",
+    "socket.io": "^4.8.1",
+    "@nestjs/websockets": "^11.1.17",
+    "@nestjs/platform-socket.io": "^11.1.17",
+    "amqp-connection-manager": "^4.1.14",
+    "ddd-tool-kit": "^2.3.0",
+    "jsonwebtoken": "^9.0.2",
+    "jwks-rsa": "^3.2.0",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.2"
+  },
+  "devDependencies": {
+    "@types/amqplib": "^0.10.5",
+    "@types/jsonwebtoken": "^9.0.7",
+    "bun-types": "latest",
+    "typescript": "^5.8.3"
+  }
+}
