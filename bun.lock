@@ -204,6 +204,7 @@
         "@nestjs/websockets": "^11.1.17",
         "amqp-connection-manager": "^4.1.14",
         "ddd-tool-kit": "^2.3.0",
+        "ioredis": "^5.4.1",
         "jsonwebtoken": "^9.0.2",
         "jwks-rsa": "^3.2.0",
         "reflect-metadata": "^0.2.2",
