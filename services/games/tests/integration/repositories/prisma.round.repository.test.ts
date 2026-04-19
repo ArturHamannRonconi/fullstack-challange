@@ -207,9 +207,12 @@ describe("PrismaRoundRepository (integration, requires Postgres)", () => {
 
   describe("findBetsByPlayer", () => {
     it("returns paginated rounds + bet ids for a player", async () => {
-      const round = buildRound({ status: "CRASHED" });
+      const round = buildRound({ status: "BETTING_OPEN" });
       createdRoundIds.push(round.id.value);
       const bet = placedBetOnRound(round, TEST_PLAYER_ID, 2_000n);
+      round.closeBetting();
+      round.startRunning(Date.now());
+      round.crash();
       await repo.save(round);
 
       const playerId = PlayerIdValueObject.init({ value: TEST_PLAYER_ID })
